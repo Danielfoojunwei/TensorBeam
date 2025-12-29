@@ -69,7 +69,7 @@ We maintain a rigorous benchmark suite (`/bench`) comparing TensorBeam against i
 | **Throughput** | 1000 QPS | 0.007 QPS | **1000+ QPS** |
 | **Privacy** | ❌ None | ✅ Provable | ✅ High Assurance |
 
-*   **Benchmark Harness**: `python bench/runner.py --scenarios s0 s1`
+*   **Benchmark Harness**: `python bench/harness/runner.py --scenarios s0 s1`
 *   **Optimization Guide**: [See Docs](docs/optimization_guide.md)
 
 ---
