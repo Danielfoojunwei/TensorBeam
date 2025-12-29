@@ -10,7 +10,7 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://user:pass@db:5432/moai
-      - BACKEND_TYPE=mock
+      - BACKEND_TYPE=native
       - APP_NAME="MOAI Control Plane (Local)"
     depends_on:
       - db
@@ -23,7 +23,7 @@ services:
     command: [ "python", "-m", "platform.backend.cmd.worker" ]
     environment:
       - DATABASE_URL=postgresql://user:pass@db:5432/moai
-      - BACKEND_TYPE=mock
+      - BACKEND_TYPE=native
     depends_on:
       - db
       - redis
@@ -44,18 +44,6 @@ services:
 
   redis:
     image: redis:7-alpine
-    networks:
-      - moai-net
-
-  # Mock Frontend for Dev
-  frontend-mock:
-    image: python:3.11-slim
-    command: [ "python", "-m", "http.server", "3000" ]
-    working_dir: /app
-    volumes:
-      - ../frontend:/app
-    ports:
-      - "3000:3000"
     networks:
       - moai-net
 
