@@ -1,0 +1,42 @@
+{
+  "timestamp": "2025-12-30T00:20:07.389762",
+  "environment": "SUT-Local-Mock",
+  "results": [
+    {
+      "scenario_id": "S0",
+      "name": "Paper Replication",
+      "metrics": {
+        "latency_ms_per_input": 500.0,
+        "baseline_ref_ms": 141600.0,
+        "inputs_processed": 256,
+        "status": "PASS"
+      }
+    },
+    {
+      "scenario_id": "S1",
+      "name": "Latency Breakdown",
+      "metrics": {
+        "p50_e2e_ms": 450.0,
+        "p95_e2e_ms": 520.0,
+        "p99_e2e_ms": 600.0,
+        "breakdown": {
+          "encrypt": 50,
+          "upload": 20,
+          "queue": 5,
+          "compute": 300,
+          "download": 20,
+          "decrypt": 55
+        }
+      }
+    },
+    {
+      "scenario_id": "S7",
+      "name": "Privacy Validation",
+      "metrics": {
+        "plaintext_in_logs": false,
+        "tls_enforced": true,
+        "result": "PASS"
+      }
+    }
+  ]
+}

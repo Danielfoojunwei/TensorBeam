@@ -1,0 +1,25 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY pyproject.toml ./
+
+# Install Python dependencies
+RUN pip install --no-cache-dir pip --upgrade && \
+    pip install --no-cache-dir tenseal httpx pydantic numpy pyyaml
+
+# Copy application code
+COPY moai_core/ ./moai_core/
+COPY moai_client_sdk/ ./moai_client_sdk/
+COPY robops_edge_agent/ ./robops_edge_agent/
+COPY adapters/ ./adapters/
+COPY examples/ ./examples/
+
+# Default command
+CMD ["python", "-m", "examples.incident_triage_demo"]

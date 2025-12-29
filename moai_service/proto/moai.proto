@@ -1,0 +1,138 @@
+syntax = "proto3";
+
+package moai.v1;
+
+option go_package = "moai/v1;moaiv1";
+
+// ============================================================================
+// Key Management
+// ============================================================================
+
+message RegisterContextRequest {
+    string tenant_id = 1;
+    bytes context_bytes = 2;  // Serialized CKKS context (public params)
+    string scheme = 3;        // "ckks"
+    map<string, string> metadata = 4;
+}
+
+message RegisterContextResponse {
+    string context_id = 1;
+    string status = 2;
+}
+
+message RegisterEvalKeysRequest {
+    string context_id = 1;
+    bytes eval_keys_bytes = 2;  // Serialized evaluation keys
+    int32 ttl_seconds = 3;      // Key expiration (default 3600)
+}
+
+message RegisterEvalKeysResponse {
+    string status = 1;
+    int64 expires_at_unix = 2;
+}
+
+// ============================================================================
+// Job Submission
+// ============================================================================
+
+message SubmitJobRequest {
+    string context_id = 1;
+    string model_id = 2;
+    repeated bytes ciphertext_inputs = 3;  // Encrypted inputs (may be multiple for batch)
+    map<string, string> metadata = 4;
+    string idempotency_key = 5;  // For exactly-once semantics
+}
+
+message SubmitJobResponse {
+    string job_id = 1;
+    JobStatus status = 2;
+}
+
+message GetJobStatusRequest {
+    string job_id = 1;
+}
+
+message GetJobStatusResponse {
+    string job_id = 1;
+    JobStatus status = 2;
+    string error_message = 3;
+    int64 created_at_unix = 4;
+    int64 started_at_unix = 5;
+    int64 completed_at_unix = 6;
+}
+
+message FetchResultRequest {
+    string job_id = 1;
+}
+
+message FetchResultResponse {
+    string job_id = 1;
+    repeated bytes ciphertext_outputs = 2;
+    ResultMetadata metadata = 3;
+}
+
+message ResultMetadata {
+    string model_id = 1;
+    double latency_ms = 2;
+    int64 input_bytes = 3;
+    int64 output_bytes = 4;
+}
+
+// ============================================================================
+// Health & Discovery
+// ============================================================================
+
+message HealthRequest {}
+
+message HealthResponse {
+    string status = 1;
+    string version = 2;
+    string backend = 3;
+}
+
+message ListModelsRequest {}
+
+message ListModelsResponse {
+    repeated ModelInfo models = 1;
+}
+
+message ModelInfo {
+    string model_id = 1;
+    int32 input_dim = 2;
+    int32 output_dim = 3;
+    string scheme = 4;
+    string description = 5;
+    string model_type = 6;
+}
+
+// ============================================================================
+// Enums
+// ============================================================================
+
+enum JobStatus {
+    JOB_STATUS_UNKNOWN = 0;
+    JOB_STATUS_QUEUED = 1;
+    JOB_STATUS_PROCESSING = 2;
+    JOB_STATUS_COMPLETED = 3;
+    JOB_STATUS_FAILED = 4;
+    JOB_STATUS_EXPIRED = 5;
+}
+
+// ============================================================================
+// Service Definition
+// ============================================================================
+
+service MOAIService {
+    // Key Management
+    rpc RegisterContext(RegisterContextRequest) returns (RegisterContextResponse);
+    rpc RegisterEvalKeys(RegisterEvalKeysRequest) returns (RegisterEvalKeysResponse);
+    
+    // Job Operations
+    rpc SubmitJob(SubmitJobRequest) returns (SubmitJobResponse);
+    rpc GetJobStatus(GetJobStatusRequest) returns (GetJobStatusResponse);
+    rpc FetchResult(FetchResultRequest) returns (FetchResultResponse);
+    
+    // Discovery
+    rpc Health(HealthRequest) returns (HealthResponse);
+    rpc ListModels(ListModelsRequest) returns (ListModelsResponse);
+}

@@ -1,0 +1,23 @@
+# Adapter Configuration Templates
+
+# Formant-like Platform Configuration
+platform_name: formant_like
+
+connection:
+  host: "0.0.0.0"
+  port: 8080
+  # Webhook receiver settings
+
+event_mappings:
+  event_id: "id"
+  event_type: "eventType"
+  text_content: "data.message"
+  robot_id: "data.robotId"
+
+writeback:
+  callback_url: "https://api.formant.io/v1/incidents/update"
+  payload_template:
+    incidentId: "$event_id"
+    severity: "$class_label"
+    aiConfidence: "$confidence"
+    processedBy: "moai-fhe"

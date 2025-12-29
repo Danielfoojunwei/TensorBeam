@@ -1,0 +1,99 @@
+# Default values for moai-service
+replicaCount: 2
+
+image:
+  repository: moai/moai-service
+  pullPolicy: IfNotPresent
+  tag: "0.1.0"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8000"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+
+service:
+  type: ClusterIP
+  httpPort: 8000
+  grpcPort: 50051
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: moai.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources:
+  limits:
+    cpu: 2000m
+    memory: 4Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# MOAI configuration
+moai:
+  # Log level (DEBUG, INFO, WARNING, ERROR)
+  logLevel: INFO
+  
+  # Session TTL in seconds
+  sessionTtlSeconds: 3600
+  
+  # Worker pool size
+  workerPoolSize: 4
+  
+  # Max queue size
+  maxQueueSize: 1000
+  
+  # Enable mTLS
+  mtlsEnabled: false
+  
+  # Redis for persistent queue (optional)
+  redis:
+    enabled: false
+    host: redis
+    port: 6379
+
+# Metrics and observability
+observability:
+  metrics:
+    enabled: true
+    port: 9090
+  tracing:
+    enabled: false
+    otlpEndpoint: ""

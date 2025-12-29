@@ -1,0 +1,20 @@
+# AWS RoboRunner-like Platform Configuration
+platform_name: aws_roborunner_like
+
+connection:
+  host: "0.0.0.0"
+  port: 8080
+
+event_mappings:
+  event_id: "workOrderId"
+  event_type: "work_order"
+  text_content: "details.description"
+  robot_id: "workerFleet.workerId"
+
+writeback:
+  callback_url: "https://api.example.com/orders/annotate"
+  payload_template:
+    orderId: "$event_id"
+    riskLevel: "$class_label"
+    moaiConfidence: "$confidence"
+    requiresEscalation: false

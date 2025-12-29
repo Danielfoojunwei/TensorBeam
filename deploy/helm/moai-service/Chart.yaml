@@ -1,0 +1,18 @@
+apiVersion: v2
+name: moai-service
+description: MOAI FHE Inference Service Helm Chart
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+
+keywords:
+  - fhe
+  - encryption
+  - inference
+  - robotics
+  - privacy
+
+maintainers:
+  - name: MOAI Team
+
+dependencies: []

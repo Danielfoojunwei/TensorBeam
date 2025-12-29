@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  moai-api:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    image: moai/platform-backend:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/moai
+      - BACKEND_TYPE=mock
+      - APP_NAME="MOAI Control Plane (Local)"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - moai-net
+
+  moai-worker:
+    image: moai/platform-backend:latest
+    command: [ "python", "-m", "platform.backend.cmd.worker" ]
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/moai
+      - BACKEND_TYPE=mock
+    depends_on:
+      - db
+      - redis
+    # In prod, this would have 'deploy: resources: reservations: devices: - driver: nvidia'
+    networks:
+      - moai-net
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=moai
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - moai-net
+
+  redis:
+    image: redis:7-alpine
+    networks:
+      - moai-net
+
+  # Mock Frontend for Dev
+  frontend-mock:
+    image: python:3.11-slim
+    command: [ "python", "-m", "http.server", "3000" ]
+    working_dir: /app
+    volumes:
+      - ../frontend:/app
+    ports:
+      - "3000:3000"
+    networks:
+      - moai-net
+
+volumes:
+  pg_data:
+
+
+networks:
+  moai-net:

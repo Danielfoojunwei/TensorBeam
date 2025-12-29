@@ -1,0 +1,19 @@
+# InOrbit-like Platform Configuration
+platform_name: inorbit_like
+
+connection:
+  host: "0.0.0.0"
+  port: 8080
+
+event_mappings:
+  event_id: "eventId"
+  event_type: "type"
+  text_content: "payload.description"
+  robot_id: "robotId"
+
+writeback:
+  callback_url: "https://api.inorbit.ai/webhooks/decision"
+  payload_template:
+    missionId: "$event_id"
+    classification: "$class_label"
+    confidence: "$confidence"
